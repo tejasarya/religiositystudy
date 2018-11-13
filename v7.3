@@ -1,0 +1,479 @@
+---
+title: "Religiosity in the United States: Reassessing the Evidence"
+author: "Tejasv Pratap Arya"
+date: "Updated: 08/15/2018"
+output:
+  html_document: default
+
+---
+Abstract:
+
+The study of religiosity and its effects on the American electorate have been largely limited. Previous studies have evaluated the voting behavior of individual religious groups, but not of the voting behavior of the religious. With a non-religious, secular population growing in the United States, understanding the effects of religiosity on electoral politics is of paramount importance. This paper seeks to bridge this knowledge gap by evaluating the behavior of the religious population in the 2016 election. I pose two hypotheses: first that religiosity aligns an individuals social policy preferences; second, that religiosity serves as a cleavage in the electorate when campaigns and parties emphasize these social issues. I first study the 2016 election, finding that the first hypotheses holds and that religiosity, without the need to control for individual religious groups, divided the electorate and explained their behavior. Moreover, I evaluate historical trends dating back to the 1980s to quantify changes in electorate religiosity and subsequent changes in electorate and congressional social conservatism, finding further evidence for the two hypotheses. Ultimately, these trends underscore the need to study religiosity and its potential to drive voter behavior.
+
+```{r initial loading packages, include=FALSE}
+library(survey)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(statsr)
+library(knitr)
+library(CARS)
+library(car)
+library(betas)
+library(gplots)
+library(descr)
+library(foreign)
+library(psych)
+library(stargazer)
+
+#load function gets the data as long as it is saved in the same directory
+load("ANES_TimeSeries16.Rdata")
+load("ANES_TimeSeriesCDF.Rdata")
+```
+The study of religion in the American electorate has produced divided literature that places varying degrees of emphasis on religion as a driver for policy preferences. Of course, the interactions between religion and public policy is one of extreme importance. Not only is the study of religion in American Politics important because of the proposed separation or church and state codified in the constitution, but also the interaction between religion and policy preferences has implications for electoral politics considerations. Most notably, it is important to understand how much religion “leaks” into a voter’s choice, and by extension, into public policy and the “State.” Despite the need to understand the role of religious institutions and religiosity in the American electorate, there is a dearth of literature on the subject.
+	Anecdotally, religion has played a substantial role in electoral politics. Hillary Clinton, for example, was noted to have “gained a voter” by demonstrating her knowledge of the bible to a voter who said: “I'd like to know that my president has some religious beliefs in God” (Merica, 2015). Such instances have prompted critics to theorize about the possibilities (or lack thereof) of a non-Christian or non-religious elected official (. Still, the effects of religiosity on the individual remain largely unexplored. Historical studies have focused either on specific religious groups, particularly evangelical protestants and the Catholics, and their policy preferences on individual issues. This analysis in itself has produced counterintuitive results: Catholics, for instance, oppose abortion but 44% identify or lean towards the Democratic party as opposed to 37% identifying with the Republican party (Pew, 2016). 
+	Nonetheless, there are some competing theories on the importance of religious institutions on a global scale. Most notably, secularization theorists have suggested that religious institutions diminish in their effects in growingly industrial societies (Norris and Inglehart, 2004). Gaskins et. Al., notably, explain this phenomenon in consideration of individual utility drawn from religious institutions and economic benefit. Their models explain a general declaim in religiosity amongst modernized countries and the dwindling size of many religious groups in countries such as the United States, New Zealand, and France (Gaskins, 2013). These findings seem to have inspired researchers across Western Europe, Australia, and New Zealand, many of whom have reconsidered long standing “cleavages” in the electorate, including religion, labor status, and gender. As such, much of the literature regarding the role of religion in policy preferences and voting behavior is out of Europe, and Gaskins and Norris invariably borrow from notable American political scientists, their findings are not always applicable to the United States. 
+From the literature in Europe, there are three main schools of thought: first, that religious groups are correlated with certain social characteristics. There seems to be little evidence for this in the United States. Liu et. Al., notably, find confounding variables such as race that transcend the bounds of traditional religious groups and their perceived social characteristics (Liu et. Al, 2009). The second school of though has the Michigan model, placing an emphasis long-standing partisan loyalties and arguing that religion initially aligns partisan tendencies, but ideology and issue preference is guided by choices made by the party that cause changes in policy positions of religious groups. Still, such a model for the United States seems to have little relevance as group loyalties are more often than not confounded by economic situations and intersections with other identities (say a Protestant, who traditionally would be aligned with the Republicans in for this second school of thought, is also a factory worker during economic crisis) (Axelrod, 1972). One last model finds a growing divide between the religious and the “secular” population. Christopher Raymond and Brian, notably, have observed such divides in Chile and New Zealand (Raymond and Feltch, 2014). Still, Chile has a relatively homogenous religious population (Catholics), unlike the United States. While Raymond’s findings, then, don’t directly apply to the United States, perhaps it is useful to consider his taxonomy for understanding religiously motivated voters in the United States. There is no doubt that the non-religious population in the United States continues to grow (Pew, 2016). To be clear, this is not the religious “nones,” but rather a group that perhaps grew up religious, but separates religious doctrine from matters of public policy, personal decisions, etc. This secular population is one that is largely unexplored, and remains to be unexplored given a lack of substantial data on the population. Nonetheless, understanding the role of religiosity serves a proxy to understanding this secular population. If religiosity is treated as a continuous variable, this population would fall on the lower spectrum—they might go to Church during Christmas or put up a menorah during Hanukah, but these special occasions are the extent of their religious involvement. They are not evangelical, nor are they atheist or “nones,” but they do exist. 
+While much emphasis has been placed on identity politics of individual religious groups, It is likely that religiosity and connection to religious institutions, regardless of which institution, guides policy preferences. In discussion of religion and religiosity in the aggregate, the most likely mechanism is through an increase in moral fundamentalism. While I recognize longstanding literature naming economics as a confounding variable to partisan loyalties, it is possible that religiosity has more to do with typically socially and moral issues than with economic ones (Campbell and Monson, 2008; Stanley and Niemi, 2006). This is the first hypothesis of this paper:
+H1. Religiosity aligns an individual’s social policy preferences
+	To be clear, this does not refer to any specific religious group, but rather religiosity as a whole. Of course, it is useful to understand when individuals prioritize their social policy preferences over other policy preferences. In this regard, the Michigan model is quite useful. Whereas I do not think that parties wholly guide individual choices, they do have the ability to shift the electorate’s focus on certain issues. If religiosity serves as a cleavage in the United States as evidence suggests it does in Europe, it is not enough to consider evangelism in the “religious right” or individual religious affiliations. Rather, we must study how adherence to religion in general may serve as a cleavage. In this regard, it is important to note that while H1 says that religiosity aligns an individual’s social policy positions, it does not claim that varying levels of religiosity alone will divide the electorate. To borrow from the Michigan Model, then, our second hypothesis is:
+H2. If parties emphasize these social issues, Religiosity serves as a cleavage in the electorate
+In many ways, the most recent presidential election in the United States serves as a useful study of these hypotheses. Given the increased focus both campaigns placed on social issues, drawing moral stances between pro-choice and pro-life et cetera et cetera. Thus, this paper examines panel data before and after the 2016 election to understand motivating factors and the potential divides in the electorate. Answering the question of whether or not the electorate is truly divided through these “cleavages” is important not only in the longstanding debates surrounding polarization, but also for larger democratic questions probing the relationship between religious institutions and the government and representatives and their voters.
+
+
+Data Sources
+
+To test these hypotheses, I rely on ANES cross-sectional data from 2016. Data collection for time series data from 2016 began in early September and continued through January 2018. Any pre-election interviews were conducted with respondents two months prior to the November election and post-election re-interviews were continued immediately following the election. The data is gathered through face-to-face interviews and online collection, with phrasing of questions only changing somewhat between the two modes of collection. In an attempt to maximize sample size, I make use of the full data set, including the online collection. The data is weighted with corresponding weights provided by ANES. Whereas the ANES asks questions on topics ranging from electoral participation, voting behavior, public opinion, media exposure, cognitive style, and much more, I primarily make use of their data on voting, party identification, religiosity, and social policy preferences. I retain other variables in the data set for the potential of further studies.
+The 2016 ANES data proves to be incredibly valuable given our goal to evaluate the effects of religiosity in times when parties emphasize social policy positions. In 2016, the two major candidates for President, Donald Trump and Hillary Clinton, provided a unique combination of platforms. Whereas both criticized big banks, hinted at greater regulation of corporations, and provided otherwise similar fiscal plans (especially compared to the 2012 election), they were starkly opposed on social, or moral issues. Donald Trump, for example, was opposed to abortion, and even hinted at possible penalties and punishments for women who sought abortions. Hillary Clinton, on the other hand, was staunchly pro-choice. Such differences can be observed in their other platform positions as well. 
+Of course, it is not enough to evaluate data from 2016 to consider our hypotheses. Thus, I make use of the cross-sectional Cumulative Data File from ANES as well. In this file, ANES merges all cross-section cases and variables from Time Series studies dating back to 1948, including any questions that have been asked three or more times in that time period. The variables are made compatible for comparison across years, although there is slight modification to phrasing of certain variables. Notably, there are some questions that were only asked in the 2016 interviews, such as opinions on businesses having to serve homosexuals. In evaluating social and moral positions, such questions are indispensable, so I make use of them for 2016 even though they are not available dating back to 1948. As such, many of the questions that are most relevant to matters of social policy have been asked since the late 1970s and early 1980s. This time frame, nonetheless, provides for extensive understanding of changes in religiosity and policy preferences from a historical standpoint. 
+
+
+
+```{r 16 design 1}
+ANES_16.design <-
+  svydesign(id= ~V160102, strata = ~V160102, data=ANES_TimeSeries16, weights=~V160102, nest=TRUE)
+ANES_16 <-
+  update(ANES_16.design, one=1, relig_imp = recode(V161241, "1=1; 2=0; else=NA"), relig_serv1 =recode(V161244, "1=1; 2=0; else=NA"), relig_serv2 = recode(V161245, "1=4; 2=3; 3=2; 4=1; 5=0; else=NA"), relig_serv2 = recode(V161245, "1=4; 2=3; 3=2; 4=1; 5=0; else=NA"), vote = recode(V162031, "1:3=0; 4=1; else=NA"), trump = recode(V162034a, "1=0; 2=1; else=NA"))
+```
+
+```{r 16 Recoding Variables}
+
+ANES_TimeSeries16$relig_imp <- recode(ANES_TimeSeries16$V161241, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$relig_serv1 <- recode(ANES_TimeSeries16$V161244, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$relig_serv2 <- recode(ANES_TimeSeries16$V161245, "1=3; 2=2; 3=1; 4=0; else=NA")
+ANES_TimeSeries16$Agnostic <- recode(ANES_TimeSeries16$V161266k, "0=0; 1=1; else=NA")
+ANES_TimeSeries16$BornAgain <- recode(ANES_TimeSeries16$V161263, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$literalist <- recode(ANES_TimeSeries16$V161243, "1=1; 2:3=0; else=NA")
+ANES_TimeSeries16$vote <- recode(ANES_TimeSeries16$V162031, "1:3=0; 4=1; else=NA")
+ANES_TimeSeries16$conservatism <- recode(ANES_TimeSeries16$V161126, "1=-3; 2=-2; 3=-1; 4=0; 5=1; 6=2; 7=3; else=NA")
+ANES_TimeSeries16$Trump <- recode(ANES_TimeSeries16$V162034a, "1=0; 2=1; -1=0; else=NA")
+ANES_TimeSeries16$party <- recode(ANES_TimeSeries16$V162030, "1='D'; 2='R'; 4='I'; else=NA")
+ANES_TimeSeries16$abortion <- recode(ANES_TimeSeries16$V161232, "1=2; 2:3=1; 4=0; else=NA")
+ANES_TimeSeries16$cake <- recode(ANES_TimeSeries16$V161227, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$trans <- recode(ANES_TimeSeries16$V161228, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$homosexjob <- recode(ANES_TimeSeries16$V161229, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$homosexadopt <- recode(ANES_TimeSeries16$V161230, "1=1; 2=0; else=NA")
+ANES_TimeSeries16$deathpen <- recode(ANES_TimeSeries16$V161233, "1=1; 2=0; else=NA")
+
+
+```
+
+
+
+Lastly, I make use of Voteview data, namely DW-Nominate scores. These scores are provided for individual legislatures in the House of Representatives and the United States Senate and represent a mapping of each roll call vote on a liberal-conservative scale. From Voteview:
+“Ideological positions are calculated using the DW-NOMINATE…procedure, developed by Poole and Rosenthal in the 1980s and is a "scaling procedure", representing legislators on a spatial map. In this sense, a spatial map is much like a road map--the closeness of two legislators on the map shows how similar their voting records are. Using this measure of distance, DW-NOMINATE is able to recover the "dimensions" that inform congressional voting behavior.” Whereas the ANES cumulative data set does not include specific locations, the Cumulative Data file does include “Regions” (See Appendix A). I use DW-Nominate scores to compare representative response to changes in electorate religiosity and issue preferences on a regional basis. 
+
+
+
+Religiosity Index
+
+A large part of the theoretical argument of this paper relies upon the distinction between simply belonging to a religious group and “religiosity.” As defined in this paper, religiosity is the composite of how much faith an individual places in a religious institution and, by extension, how much that religious institution influences the individual’s policy preferences. The ANES includes numerous questions regarding religious affiliation, including whether the individual is a “born-again” Christian, whether they are Agnostic, etc. These questions, of course, have not been consistent since 1948, and thus, I consider the religiosity scales for the 2016 data and for the cumulative data separately. I do not compare actual numerical results from different data sets, but do compare them relativistically. 
+In composing an index of religiosity for 2016 respondents, I compile 5 questions ranging from whether the individual considers themselves to be “born-again,” how often they attend religious services, et cetera (See Appendix B for complete list of questions and corresponding variables). The variables were recoded for more understandable analysis in regressions, etc: the variable for “born-again,” for example, was coded “1” for yes and “0” for no. Since I wish to quantify a latent variable of religiosity that guides responses to those questions, I conduct principal component analysis, finding that a single factor is sufficient to explain 73.7% of variance in the data. Then, I conduct factor analysis to compute index scores, finding that one factor is sufficient with sufficient uniqueness for each variable. The factor scores were calculated using Varimax rotation, and factor loadings were used to compute an overall “religiosity,” with higher values indicating more faith and attachment to religious institutions. 
+In composing an index of religiosity in the cumulative data file, I compile 4 questions (similar to those used for creating an index for the 2016 data set) ranging from how the individual attends religious services, whether they consider religion to be important in their life, et cetera (See Appendix C for complete list of questions and corresponding variables). I conduct principal component analysis, finding that a single factor is sufficient to explain 74.4% of variance in the data. Then, I conduct factor analysis to compute index scores, finding that one factor is sufficient with sufficient uniqueness for each variable (p<0.05; chi-square 174 on 2 degrees of freedom). The factor scores were calculated using Varimax rotation, and factor loadings were used to compute an overall “religiosity-score.”
+
+Social Conservatism Index 
+Quantifying social conservatism, much like quantifying religiosity, serves as an important underpinning of this paper. “Conservatism,” as an umbrella term is used to describe a variety of policy positions, and as such, does not wholly or exclusively encapsulate moral and social issues. As defined in this paper, “social conservatism” relates to traditional interpretations given to moral questions such as abortion, death penalty, etc. In essence, these are questions that are guided primarily by socialization and upbringing, precisely why this paper hypothesizes that religiosity aligns such issues. These questions are also of importance because of the role they played in the 2016 election. The ANES data set includes numerous questions regarding these questions, including whether (and when) an individual favors abortion, their feelings towards homosexuals, their opinion on the death penalty, et cetera. Much like questions probing religiosity, these variables have not been consistent since 1948, with some time periods asking more questions on social issues than others, and thus, I consider the social conservatism scales for the 2016 data and for the cumulative data separately. Again, I do not compare actual numerical results from different data sets, but do compare them in relativistically.   
+For considering social conservatism in 2016 respondents, I compile 6 questions ranging from whether (and when) the individual favors abortion, whether they think homosexuals should be allowed to adopt, et cetera (See Appendix D for complete list of questions and corresponding variables). To quantify an underlying social conservatism guiding these answers, I conduct principal component analysis, finding that a single factor is sufficient to explain 61.7% of variance in the data (this decrease in explanatory power, especially in the context of the religious index, is somewhat explained by the introduction of new questions, including one pertaining to transgender-rights but is nonetheless important to note). Then, I conduct factor analysis to compute index scores, finding that one factor is sufficient with sufficient uniqueness for each variable (p<0.05; chi-square 197.4 on 9 degrees of freedom). The factor scores were calculated using Varimax rotation, and factor loadings were used to compute an overall “social score,” with higher values indicating greater conservatism. 
+A similar process was followed for the cumulative data file, but since questions pertaining to social issues change depending on the time period (for example, the data set includes a variable on school segregation, which was, by ANES’s admission, “inappropriate” to ask in 2000 or 2008). I compile 4 questions ranging from whether (and when) the individual favors abortion (a question asked continuously since at least the 1970s), their feeling thermometer towards homosexuals, what the individual thinks is the “place of a woman,” et cetera (See Appendix E for complete list of questions and corresponding variables). To quantify an underlying social conservatism guiding these answers, I conduct principal component analysis, finding that a single factor is sufficient to explain 44.9% of variance in the data. It is worth noting that while a single factor does not explain a majority of the variance in the data, this might be because of the overwhelming role of “women’s” issues in the analysis. Indeed, considering a second component explains 71.6% of the variance in the data (see Appendix F). In conducting factor analysis to compute index scores this suspicion is confirmed as there is a decreased uniqueness between the abortion and “women’s place” question. Nonetheless, factor analysis reports that one factor is sufficient (p<0.05; chi-square 83.86 on 2 degrees of freedom). The factor scores were calculated using Varimax rotation, and factor loadings were used to compute an overall “social score,” with higher values indicating greater conservatism. 
+
+```{r 16 FA religion}
+
+ANES_TimeSeries16_ReligionIndexCalculations <- ANES_TimeSeries16 %>%
+    select(relig_imp, relig_serv2, Agnostic, BornAgain, literalist) %>% filter(!is.na(relig_imp), !is.na(relig_serv2), !is.na(Agnostic), !is.na(BornAgain), !is.na(literalist))
+ANES_TimeSeries16_ReligionIndexCalculations.pca <- princomp(ANES_TimeSeries16_ReligionIndexCalculations)
+summary(ANES_TimeSeries16_ReligionIndexCalculations.pca)
+plot(ANES_TimeSeries16_ReligionIndexCalculations.pca)
+ANES_TimeSeries16_ReligionIndexCalculations.fa1 <- factanal(ANES_TimeSeries16_ReligionIndexCalculations, factors=1, rotation="varimax")
+ANES_TimeSeries16_ReligionIndexCalculations.fa5 <- factanal(ANES_TimeSeries16_ReligionIndexCalculations, factors=1, scores="regression")
+ANES_TimeSeries16_ReligionIndexCalculations.fa5
+ANES_TimeSeries16_ReligionIndexCalculations
+```
+
+```{r 16 FA social positions}
+
+
+ANES_TimeSeries16_SocialConservatismCalculations <- ANES_TimeSeries16%>%
+    select(abortion, cake, trans, homosexjob, homosexadopt, deathpen) %>% filter(!is.na(abortion), !is.na(cake), !is.na(trans), !is.na(homosexjob), !is.na(homosexadopt), !is.na(deathpen))
+ANES_TimeSeries16_SocialConservatismCalculations.pca <- princomp(ANES_TimeSeries16_SocialConservatismCalculations)
+summary(ANES_TimeSeries16_SocialConservatismCalculations.pca)
+plot(ANES_TimeSeries16_SocialConservatismCalculations.pca)
+ANES_TimeSeries16_SocialConservatismCalculations.fa1 <- factanal(ANES_TimeSeries16_SocialConservatismCalculations, factors=1, rotation="varimax")
+ANES_TimeSeries16_SocialConservatismCalculations.fa5 <- factanal(ANES_TimeSeries16_SocialConservatismCalculations, factors=1, scores="regression")
+ANES_TimeSeries16_SocialConservatismCalculations.fa5
+ANES_TimeSeries16_SocialConservatismCalculations
+```
+
+```{r 16 factor scores}
+ANES_TimeSeries16_regressions <- ANES_TimeSeries16%>%
+    select(conservatism, abortion, cake, trans, homosexjob, homosexadopt, deathpen, relig_imp, relig_serv2, Agnostic, BornAgain, literalist, Trump, vote) %>% filter(!is.na(abortion), !is.na(cake), !is.na(trans), !is.na(homosexjob), !is.na(homosexadopt), !is.na(deathpen), !is.na(relig_imp), !is.na(relig_serv2), !is.na(Agnostic), !is.na(BornAgain), !is.na(literalist), !is.na(Trump), !is.na(vote), !is.na(conservatism))
+
+hist(ANES_TimeSeries16_regressions$conservatism)
+ANES_TimeSeries16_regressions$socialconservatism <- (0.550*ANES_TimeSeries16_regressions$abortion + 0.590*ANES_TimeSeries16_regressions$cake + 0.644*ANES_TimeSeries16_regressions$trans + -0.474*ANES_TimeSeries16_regressions$homosexjob + -0.635*ANES_TimeSeries16_regressions$homosexadopt + 0.227*ANES_TimeSeries16_regressions$deathpen)
+
+ANES_TimeSeries16_regressions$religiosity <- (0.492*ANES_TimeSeries16_regressions$relig_imp + 0.549*ANES_TimeSeries16_regressions$relig_serv2 + -0.198*ANES_TimeSeries16_regressions$Agnostic + 0.568*ANES_TimeSeries16_regressions$BornAgain + 0.609*ANES_TimeSeries16_regressions$literalist)
+
+summary(ANES_TimeSeries16_regressions$religiosity)
+```
+
+Results:
+Getting out the vote, 2016
+
+Historically, political scientists have often considered religion to be an important factor in voter turnout (Axelrod, 1972; Stanley and Neimi, 2006). These theories are championed by those that consider religiosity to be an important factor in matters of civic engagement. Their rationale holds that religious groups serve as vehicles for civic engagement and electoral engagement. Whereas historical evidence for these theories seem to hold, the effects of religiosity in civic engagement were substantially diminished in the 2016 election. The 2016 ANES study included a question that asks respondents whether they believe religion is important in their life and comparing turnout for groups that answered “No” and “Yes” seem to yield evidence contrary to these conventional beliefs. As Figure 1 shows, there is no significant difference in means between these cohorts (p=0.22). The 95-percent confidence interval for difference of means is [-0.042,  0.009]. In fact, this interval includes the possibility that those that do not consider religion to be important in their life actually turned out in higher numbers during the most recent election. Of course, this is a challenge to anecdotal evidence and conventional wisdom. 
+
+```{r 16 Religious Importance and Turnout, echo = FALSE}
+crosstab(ANES_TimeSeries16$relig_imp, ANES_TimeSeries16$vote, prop.c = TRUE, plot=TRUE, weight = ANES_TimeSeries16$V160102)
+#plot means is a set function and syntax is provided as y-axis variable ~ x-axis variable. ylab and xlab show the axis labels
+plotmeans(ANES_TimeSeries16$vote ~ ANES_TimeSeries16$relig_imp,
+          xlab = "Is Religion Important in Your Life?", ylab="Percentage Turnout", main = "Study of changes in Turnout by Religious Importance")
+t.test(ANES_TimeSeries16$vote ~ ANES_TimeSeries16$relig_imp)
+```
+
+
+```{r 16 Religious Services and Turnout, echo = FALSE}
+
+plotmeans(ANES_TimeSeries16$vote ~ ANES_TimeSeries16$relig_serv2,
+          xlab = "Frequency of Religious Services", ylab="Percentage Turnout", main="Study of Turnout by Frequency of Religious Service")
+
+
+```
+
+Proposed differences, however, do seem to appear when considering the larger scale of “religiosity” as theorized by this paper. One of the leading factors this paper argues is frequency of religious services. In essence, those that attend religious services more often are those that are more religious, or rely on their religious organization for substantial moral guidance. The ANES study differentiates between various frequencies of attendance and evaluating differences in voter turnout based on frequency of attendance at religious services yields complicating results. As summarized in Figure 2, significant differences in voter turnout begin to emerge when considering how frequently an individual attends religious services. Again, a t-test between those who attend most often and those who attend least often shows a significant difference, but what is of particular note is that those who claim to attend religious services most often also report voting at almost 90%. Given historical figures on voter turnout, this would be remarkable, so it is possible that these results are a case of over-reporting (not only in the case of turnout, but also in the case of attending services). Still, this increase in turnout can be attributed to the emphasis placed on social issues throughout the 2016 campaign.
+
+
+A religious vote for whom, 2016
+
+In considering our first hypothesis further, it is useful to consider support for President Trump (then candidate Trump) by religiosity. As Panel 1 shows, there are statistically significant differences in support for Trump for cohorts that place various emphasis on religion, as measured by their answers to questions pertaining to the role of religion in their life, their frequency of attendance at religious services, agnosticism, and whether they consider themselves to be “born-again” Christians. 
+
+```{r 16 religious importance and Trump}
+crosstab(ANES_TimeSeries16$Trump, ANES_TimeSeries16$relig_imp, prop.c = TRUE, plot=TRUE, weight = ANES_TimeSeries16$V160102)
+plotmeans(ANES_TimeSeries16$Trump ~ ANES_TimeSeries16$relig_imp,
+          xlab = "Is Religion Important in Your Life?", ylab="% Trump", main="Study of Support for Trump by Religious Importance")
+
+#see chunk 4
+crosstab(ANES_TimeSeries16$Trump, ANES_TimeSeries16$relig_serv2, prop.c = TRUE, plot=TRUE, weight = ANES_TimeSeries16$V160102)
+plotmeans(ANES_TimeSeries16$Trump ~ ANES_TimeSeries16$relig_serv2,
+          xlab = "Frequency of Religious Services", ylab="% Trump", main= "Study of Support for Trump by Frequency of Religious Services")
+
+
+crosstab(ANES_TimeSeries16$Trump, ANES_TimeSeries16$BornAgain, prop.c = TRUE, plot=TRUE, weight = ANES_TimeSeries16$V160102)
+plotmeans(ANES_TimeSeries16$Trump ~ ANES_TimeSeries16$BornAgain,
+          xlab = "Do You consider Yourself a 'Born-Again' Christian?", ylab="% Trump", main="Study of Support for Trump by Born-Again Status")
+
+
+crosstab(ANES_TimeSeries16$Trump, ANES_TimeSeries16$Agnostic, prop.c = TRUE, plot=TRUE, weight = ANES_TimeSeries16$V160102)
+plotmeans(ANES_TimeSeries16$Trump ~ ANES_TimeSeries16$Agnostic,
+          xlab = "Are you Agnostic", ylab="% Trump", main = "Study of Support for Trump by Agnostic Status")
+
+summary(TrumpRegression<- lm(Trump ~ relig_serv2 + BornAgain + relig_imp , data = ANES_TimeSeries16))
+
+```
+It is perhaps most important to note the near exponential shape of the graph depicting support for Trump by frequency of attendance at religious services. Individuals answering “0,” who almost never or never attend religious services are what we consider to be characteristically secular, and this cohort has limited support for Trump. Additionally, those “a few times a year,” again characteristically secular, also exhibit very little support for Trump. There are, however, statistically significant difference in means between these less religious individuals and those that go “a few times a month” or “almost every week.” These significant difference, especially those that occur beyond the 50% mark, provide further evidence of these individuals being aligned primarily by their religiosity. Whereas these findings, much like the ones discussed in the previous section may be susceptible to measurement error, differences of this magnitude cannot be dismissed. 
+	In an attempt to avoid measurement error, it is useful to turn to our indices. First, we can consider the differences in social conservatism between those who supported Trump and those who did not. As the left graph in Panel 2 shows, there is no overlap in the 95% confidence in social conservatism scores between those who voted for Trump and those who did not. In fact, an average score of near 0 suggests that those who opposed Trump were, on average, about moderate on social issues. Those who supported Trump, however, had an average social conservatism score of around 1.2, well above the aggregate mean of 0.6. By combining and analyzing interactions between various measures of religiosity, we can gain a better understanding of what divided these voters.  In this regard, we can turn to the computed religiosity scores. Comparing the mean religiosity score for those that voted for Trump and those that did not (but still voted in the election), the difference in means is significant. As the right graph of Panel 2, shows, there is no overlap in the 95% confidence intervals and the magnitude of the difference is of particular note. Specifically, while those who voted for Trump had an average score of 1.5, representing the lower quartile, those who voted for Trump had a mean score in the 60th percentile. This not only provides support for our first hypothesis, but also begins to provide support for our second hypothesis. Such a drastic “cleavage” in the electorate seems to follow from the emphasis (and the mobilization this emphasis evoked) on social issues throughout the 2016 campaign.
+
+
+In further considering the role of religiosity as a cleavage in the 2016 election, we turn to a prediction model for support for Trump based on religiosity factors. Running a logit model with support for Donald Trump as the dependent variable and Frequency of Religious Services, status as a “Born Again” and self reported “religious importance” as explanatory variables, we find telling results. All coefficients except that for religious importance are significant at p<0.001 and the coefficient for Religious importance is significant at p<0.1. This confirms our initial thoughts evaluating the difference in means from Panel 1. Moreover, it is important to note that evangelism (i.e. “Born-Again”) does not have quite the predictive power theorized by those who write about the “religious right.” Instead, it is those who consider religion to be an important part of their life and those that frequently attend religious services that are more likely to have voted for Trump. In this regard, it is important to note that Frequency of Religious Services is not a dummy variable—if we were to hold “Born Again” and “religious importance” constant at 1, someone who attends religious services regularly would be 133% more likely to support Trump than someone in the same situation who only attended once or twice a year. Similarly, someone who does not attend religious services, does not consider themselves “born again” and does not say religion plays an important role in their lives would be 70% less likely to vote for Trump than someone who considered themselves “born again,” considered religion to play an important role in their lives and attends religious services a few times a year.
+
+
+```{r 16 logit model trump}
+summary(logit_16_trump <- glm(Trump ~ relig_serv2 + BornAgain + relig_imp, family = binomial, 
+    data = ANES_TimeSeries16))
+confint(logit_16_trump)
+with(logit_16_trump, pchisq(null.deviance - deviance, df.null - df.residual, lower.tail = FALSE))
+
+stargazer(logit_16_trump)
+
+```
+
+
+Religiosity and Issue Preferences, 2016
+
+	In order to further our hypothesis, we must also show a distinct set of social policy preferences between various “levels” of religiosity. Panel 3 compares the data between groups organized by their score on the “religiosity” index and their corresponding social conservatism score. The boxplot on the left divides the electorate into two halves: the highly religious and the lowly religious. Incidentally, the corresponding scores align well with our scale, representing positions on religious factors that may  be considered relatively highly religious (such as going to church every month or so, saying they get guidance from religion, etc.). In such a stratification, separated only by the median, there is some, but not a largely significant difference in conservatism. Still, those that are in the bottom 50% of “religiosity” have a median social conservatism score of 0, representing a “middle-of-the-road” mindset. In contrast, the median social conservatism score for those classified as “Highly Religious” is 1.5, and the IQR is relative spread out because of a relatively large proportion of the group scoring above a 2.5 on the scale. Dividing the electorate into “Highly Religious,” “Moderately Religious,” and “Secular,” however, yields much more striking results. First and foremost, the IQR for those in the extremes (on the secular end and on the highly religious end) is incredibly low and the 25-75th percentile of both groups stand on opposite sides of the conservatism spectrum. Moreover, it is important to note that the secular population does not have as low a social conservatism as the highly religious have a high social conservatism score. Whereas this ostensibly sheds doubt on our hypotheses,  it is important to note that the “secular” population is still religious in some way—they are not the religious “none.” In this way, the still relatively conservative scores for the secular population can be somewhat attributed to indirect effects of religiosity early in life. Nonetheless, the differences in policy preferences by religiosity go to show how religiosity can act as a cleavage in the electorate when candidates emphasize moral and social issues. 
+
+	
+
+```{r 16 Box Plot Conservatism and Religiosity}
+summary(ANES_TimeSeries16_regressions$religiosity)
+ANES_TimeSeries16_regressions$BinaryReligious <- (ifelse (ANES_TimeSeries16_regressions$religiosity>2.139, "Highly Religious", "Lowly Religious"))
+
+boxplot(socialconservatism ~ BinaryReligious, data=ANES_TimeSeries16_regressions, xlab= "Religiosity" , ylab="Social Conservatism Score", main="Study of Social Conservatism by Religiosity, 2016")
+
+
+ANES_TimeSeries16_regressions$TernaryReligious <- (ifelse (ANES_TimeSeries16_regressions$religiosity>2.748, "Highly Religious", ifelse(ANES_TimeSeries16_regressions$religiosity < 1.041, "Secular", "Moderately Religious")))
+
+boxplot(socialconservatism ~ TernaryReligious, data=ANES_TimeSeries16_regressions, xlab= "Religiosity" , ylab="Social Conservatism Score", main="Study of Social Conservatism by Religiosity, 2016")
+
+
+```
+
+```{r 16 religiosity by conservatism}
+plotmeans(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$conservatism,
+          xlab = "Conservatism", ylab="Avg Religious Score", connect = FALSE, col=2, n.label=FALSE, p=0.8)
+
+plotmeans(ANES_TimeSeries16_regressions$socialconservatism ~ ANES_TimeSeries16_regressions$conservatism,
+          xlab = "Conservatism", ylab="Social Conservatism", connect = TRUE, col=2, n.label=TRUE, main = "Study of Religiosity by Self-Assessed Conservatism")
+```
+
+```{r 16 conservatism and religiosity}
+summary(regress2 <- lm(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$conservatism))
+scatterplot(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$conservatism, col=c("blue", "brown", "black"), lwd=2)
+plotmeans(ANES_TimeSeries16_regressions$conservatism ~ ANES_TimeSeries16_regressions$Trump,
+          xlab = "Vote for Trump?", ylab="Avg Religious Score", connect = TRUE, col=2, n.label=FALSE, main="Study of Religiosity by Support for Trump", p=0.99)
+```
+
+```{r 16 religosity and social positions}
+summary(regress1 <- lm(ANES_TimeSeries16_regressions$socialconservatism ~ ANES_TimeSeries16_regressions$religiosity))
+scatterplot(ANES_TimeSeries16_regressions$socialconservatism ~ ANES_TimeSeries16_regressions$religiosity, col=c("blue", "brown", "black"), lwd=2)
+
+plotmeans(ANES_TimeSeries16_regressions$socialconservatism ~ ANES_TimeSeries16_regressions$Trump,
+          xlab = "Trump", ylab="Avg Social Conservatism Score", connect = TRUE, col=2, n.label=FALSE, main ="Study of Social Conservatism by Support for Trump")
+
+
+t.test(ANES_TimeSeries16_regressions$socialconservatism ~  ANES_TimeSeries16_regressions$Trump)
+
+
+
+```
+
+```{r 16 voter turnout and religiosity}
+plotmeans(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$vote,
+          xlab = "Vote?", ylab="Avg Religious Score", connect = TRUE, col=2, n.label=FALSE)
+t.test(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$vote)
+```
+
+```{r 16 electoral contribution calculations}
+freq(ANES_TimeSeries16_regressions$TernaryReligious)
+aggregate(ANES_TimeSeries16_regressions$vote ~ ANES_TimeSeries16_regressions$TernaryReligious, data= ANES_TimeSeries16_regressions, mean)
+aggregate(ANES_TimeSeries16_regressions$Trump ~ ANES_TimeSeries16_regressions$TernaryReligious, data= ANES_TimeSeries16_regressions, mean)
+freq(ANES_TimeSeries16$party)
+freq(ANES_TimeSeries16$Trump)
+aggregate(ANES_TimeSeries16$Trump ~ ANES_TimeSeries16$party, data= ANES_TimeSeries16, mean)
+```
+
+```{r 16 avg relig score trump + t-test}
+plotmeans(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$Trump,
+          xlab = "Trump", ylab="Avg Religious Score", main= "Study of Religiosity by Support for Trump", connect = TRUE, col=2, n.label=FALSE, p=0.8)
+t.test(ANES_TimeSeries16_regressions$religiosity ~ ANES_TimeSeries16_regressions$Trump)
+summary(ANES_TimeSeries16_regressions$religiosity)
+summary(ANES_TimeSeries16_regressions$conservatism)
+```
+
+
+```{r 16 probit model TRUMP VOTE plot attempt}
+
+summary(probit_16_religtrump <- glm(Trump ~ religiosity, family = binomial(link = "probit"), 
+    data = ANES_TimeSeries16_regressions))
+confint(probit_16_religtrump)
+
+```
+
+
+Religiosity, historically
+
+In order to be confident in our analysis of the role of religiosity in aligning social policy positions and its ability to serve as a cleavage in the electorate, it is useful to consider historical changes in religiosity. Of course, the 2016 electorate served as the prime evidence for our claims considering the incredible emphasis placed on moral and social issues, but it is also useful to turn to historical trends in religiosity.
+First, just as we did for the 2016 electorate in the previous section, we consider social policy preferences by varying levels of religiosity. In evaluating this historical data, then, we have similar findings. As the left boxplot on Panel 4 shows, if we segment the religious (secular through highly religious) population down the median, there is significant overlap between the social issue preferences. Of course, the medians are still above 0 on the social conservatism scale, suggesting a general alignment between religiosity and social conservatism when considering cumulative data. Still, of the “lowly religious,” the 75th percentile almost overlaps with the median for the “highly religious.” Our findings from the 2016 electorate, however, become more salient when segmenting the population between the highly religious, the moderately religious, and the secular. Most notably, the secular population has a much smaller IQR than does the highly religious population. What is most striking, however, is that while there is no overlap between the secular population and the highly religious population, the 25th percentile of the moderately religious are nearly as socially liberal as the 50th percentile of the secular population and the 75th percentile of the moderately religious is nearly as socially conservative as the 50th percentile of the highly religious. This sheds an important light on the nature of the relationship between religiosity and social conservatism: religiosity (or the lack thereof) has a greater effect on the correlation with social policy preferences of the highly religious (and the secular) than it does on the moderately religious. This actually conforms with the theory guiding our second hypothesis, namely that religiosity does not always serve as a “cleavage.” In times when there is a significant difference between two candidates on social policy matters, however, (say that instead of appealing to a “median voter,” one candidate positions themselves at the more conservative end of the scale ~1.5 and the other on the more liberal end ~-1 of the scale), the highly religious and the secular would have a growing divide.
+
+Of course, whether or not religiosity will continue to serve as a cleavage in the electorate depends entirely upon the composition of the electorate. In this regard, it is useful to consider historical changes in religiosity scores. Figure 3 plots the average religiosity score by year between 1980 and 2012, and shows two significant drops in scores: first between 1988 and 1990 and another between 2008 and 2012. Before reading deeply into these dramatic drops, it is worth noting that there are frequent changes to questions that are posed to respondents. Thus, these dramatic drops may be a result of measurement error. Nonetheless, the general downward trend supports secularization theory and the general trends in the macro polity. 
+
+One additional benefit of the cumulative data file is demarcation of various regions: the Northeast, the North Central, the West, and the South. This allows for a comparison of changes in religiosity on a regional basis over time. Panel 5 shows the data for the four regions, plotting a time series of the various regions over time. 
+
+These are two important points to note: first, religiosity in general has been incredibly volatile in almost all regions. Still, it is important to note that the axis are note the same on every graph. In fact, the South is significantly more religious during most years—this should not be surprising. Moreover, it is important to note that even regions that are today considered to be incredibly socially liberal have seen periods of increasing religiosity, most notably the North Central between 1996 and 2002 and the North East between 1994 and 1996. 
+	To help explain these spikes, we can consider changes in congressional voting records for the respective regions as shown in Panel 6. The variables are coded with higher scores corresponding to more conservative votes on matters of social policy. What is of note here is that there is an aggregate decline in social conservatism for all regions, corresponding to the general decrease in religiosity in the electorate. Nonetheless, there is a significant drop during the 103rd Congress for representatives from the Northeast, a decrease during the 104th Congress for representative from the South, an increase during the 111th Congress for representatives from the Northeast, and a decrease during the 112th Congress for representatives from the North Central matching with a decrease in the North East and the South. The first two—the decrease in the NE and S between the 103rd and 104th—correspond to similar changes in the religiosity of the region: the religious population in the North East had a dramatic drop two years before the start of the congress and the South saw a drastic decline after years of increase in religiosity. Similarly, the decreases in the North Central, North East, and South are explained by the decrease each region saw leading up to 2012. Still, this data is a bit misleading—despite the overall decline in conservatism and religiosity leading up to 2012, analysis of the 2016 data has shown an increasingly religiously motivated electorate. 
+
+This paper has largely explored the relationship between religiosity and social conservatism. In this regard, it is important to consider a confounding variable that has been so far ignored: age. The proposed link between religiosity and social conservatism is through moral fundamentalism, which should increase as an individual gets older (especially because moral fundamentalism is often measured against the contemporary mean). In this regard, it is useful to consider changes in religiosity for various cohorts from the CDF data set. All four cohorts that span the 1970s to current get increasingly religious, seemingly every election. As the data shows in Panel 7, these increases go against the general aggregate population trends, suggesting that population demographics play an increasing role in the potential for religiosity to serve as a cleavage. Nonetheless, despite these steady increases, religion did not serve as a cleavage in the electorate during 2008, despite each cohort seeing a significant increase in religiosity. Indeed, the historical trends have shown that drastic rises in religiosity, alone, do not mean substantially conservative social policy will be enacted. 
+
+
+
+
+
+```{r cdf religion recode }
+ANES_TimeSeriesCDF$relig_imp <- recode(ANES_TimeSeriesCDF$VCF0846, "1=1; 2=0; else=NA")
+ANES_TimeSeriesCDF$relig_guid <- recode(ANES_TimeSeriesCDF$VCF0847, "5=0; 1=1; 2=2; 3=3; else=NA")
+ANES_TimeSeriesCDF$relig_services <- recode(ANES_TimeSeriesCDF$VCF0130, "1:2=3; 3=2; 4=1; 5=0; else=NA")
+ANES_TimeSeriesCDF$literalist <- recode(ANES_TimeSeriesCDF$VCF0850, "1=1; 2:3=0; else=NA")
+freq(ANES_TimeSeriesCDF$relig_imp)
+freq(ANES_TimeSeriesCDF$relig_guid)
+freq(ANES_TimeSeriesCDF$relig_services)
+
+```
+
+```{r cdf age recode}
+ANES_TimeSeriesCDF$agecohort <- recode(ANES_TimeSeriesCDF$VCF0103, "1='A'; 2='B'; 3='C'; 4 = 'D'; 5='E'; 6='F'; else=NA")
+```
+
+```{r cdf Regular Time Series Mean Plots}
+
+plotmeans(ANES_TimeSeriesCDF$relig_imp ~ ANES_TimeSeriesCDF$VCF0004,
+          xlab = "Year", ylab="Religion important?", main= "Study of Changes in Religious Importance, 1980-2012" ,connect=TRUE, n.label=FALSE)
+plotmeans(ANES_TimeSeriesCDF$relig_guid ~ ANES_TimeSeriesCDF$VCF0004,
+          xlab = "Year", ylab="Guidance from Religion?", main= "Study of Changes in Those Getting Guidance from Religion, 1980-2012" ,connect = TRUE, n.label=FALSE)
+plotmeans(ANES_TimeSeriesCDF$relig_services ~ ANES_TimeSeriesCDF$VCF0004,
+          xlab = "Year", ylab="Religious Services", main="Study of Changes in Frequency of Religious Service Attendence, 1980-2012", connect = TRUE, col=2, n.label=FALSE)
+
+```
+
+```{r cdf Conservatism Recode}
+
+ANES_TimeSeriesCDF$conservatism <- recode(ANES_TimeSeriesCDF$VCF0301, "1=-3; 2=-2; 3=-1; 4=0; 5=1; 6=2; 7=3; else=NA")
+plotmeans(ANES_TimeSeriesCDF$conservatism ~ ANES_TimeSeriesCDF$VCF0004,
+          xlab="Year", ylab = "Conservatism", connect = TRUE, n.label=FALSE)
+
+```
+
+```{r cdf FA religion}
+
+ANES_TimeSeriesCDF_ReligionIndexCalculations <- ANES_TimeSeriesCDF %>%
+    select(relig_imp, relig_guid, relig_services, literalist) %>% filter(!is.na(relig_imp), !is.na(relig_guid), !is.na(relig_services), !is.na(literalist))
+ANES_TimeSeriesCDF_ReligionIndexCalculations.pca <- princomp(ANES_TimeSeriesCDF_ReligionIndexCalculations)
+summary(ANES_TimeSeriesCDF_ReligionIndexCalculations.pca)
+plot(ANES_TimeSeriesCDF_ReligionIndexCalculations.pca)
+ANES_TimeSeriesCDF_ReligionIndexCalculations.fa1 <- factanal(ANES_TimeSeriesCDF_ReligionIndexCalculations, factors=1, rotation="varimax")
+ANES_TimeSeriesCDF_ReligionIndexCalculations.fa1
+ANES_TimeSeriesCDF_ReligionIndexCalculations.fa5 <- factanal(ANES_TimeSeriesCDF_ReligionIndexCalculations, factors=1, scores="regression")
+ANES_TimeSeriesCDF_ReligionIndexCalculations.fa5
+```
+
+```{r cdf FA social positions}
+ANES_TimeSeriesCDF$abortion <- recode(ANES_TimeSeriesCDF$VCF0838, "1=4; 2=3; 3=2; ; 4=1; else=NA")
+ANES_TimeSeriesCDF$guaranteejob <- recode(ANES_TimeSeriesCDF$VCF0809, "1:3=-1; 4=0; 5:7=1; else=NA")
+ANES_TimeSeriesCDF$conservthermometer <- recode(ANES_TimeSeriesCDF$VCF0801, "0:33:=-1; 33:66=0; 66:100=1; else=NA")
+ANES_TimeSeriesCDF$gays <- recode(ANES_TimeSeriesCDF$VCF0232, "0:33:=-1; 33:66=0; 66:97=1; else=NA")
+ANES_TimeSeriesCDF$women <- recode(ANES_TimeSeriesCDF$VCF0834, "1:3=-1; 4=0; 5:7=1; else=NA")
+
+
+ANES_TimeSeriesCDF_SocialConservatismCalculations <- ANES_TimeSeriesCDF%>%
+    select(abortion, guaranteejob, gays, women) %>% filter(!is.na(abortion), !is.na(guaranteejob), !is.na(gays), !is.na(women))
+ANES_TimeSeriesCDF_SocialConservatismCalculations.pca <- princomp(ANES_TimeSeriesCDF_SocialConservatismCalculations)
+summary(ANES_TimeSeriesCDF_SocialConservatismCalculations.pca)
+plot(ANES_TimeSeriesCDF_SocialConservatismCalculations.pca)
+ANES_TimeSeriesCDF_SocialConservatismCalculations.fa1 <- factanal(ANES_TimeSeriesCDF_SocialConservatismCalculations, factors=1, rotation="varimax")
+ANES_TimeSeriesCDF_SocialConservatismCalculations.fa5 <- factanal(ANES_TimeSeriesCDF_SocialConservatismCalculations, factors=1, scores="regression")
+ANES_TimeSeriesCDF_SocialConservatismCalculations.fa5
+ANES_TimeSeriesCDF_SocialConservatismCalculations
+```
+
+```{r cdf factor scores}
+
+ANES_TimeSeriesCDF_regressionsrelig <- ANES_TimeSeriesCDF%>%
+    select(agecohort, relig_imp, relig_guid, relig_services, literalist, VCF0004, VCF0112, conservatism, abortion, guaranteejob, conservthermometer, gays, women, abortion) %>% filter(!is.na(agecohort), !is.na(relig_imp), !is.na(relig_guid), !is.na(relig_services), !is.na(VCF0004), !is.na(literalist), !is.na(VCF0112), !is.na(conservatism), !is.na(abortion), !is.na(guaranteejob), !is.na(conservthermometer), !is.na(women))
+
+ANES_TimeSeriesCDF_regressionsrelig$region <- recode(ANES_TimeSeriesCDF_regressionsrelig$VCF0112, "1='Northeast'; 2='NorthCentral'; 3='South'; 4='West'")
+
+ANES_TimeSeriesCDF_regressionsrelig$religscore <- (0.838*ANES_TimeSeriesCDF_regressionsrelig$relig_imp + 0.973*ANES_TimeSeriesCDF_regressionsrelig$relig_guid + 0.614*ANES_TimeSeriesCDF_regressionsrelig$relig_services + 0.420*ANES_TimeSeriesCDF_regressionsrelig$literalist)
+
+```
+
+```{r cdf factor scores social positions}
+ANES_TimeSeriesCDF_regressionsrelig$socialscore <- (0.543*ANES_TimeSeriesCDF_regressionsrelig$abortion + 0.151*ANES_TimeSeriesCDF_regressionsrelig$guaranteejob +  -0.402*ANES_TimeSeriesCDF_regressionsrelig$gays+ 0.472*ANES_TimeSeriesCDF_regressionsrelig$women)
+```
+
+```{r cdf religious scores time series}
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$religscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity 1980-2012", connect = TRUE, n.label=FALSE, p=0.9)
+```
+
+```{r cdf conservatism by year}
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$socialscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Social Conservatism", main = "Study of Changes in Social Conservatism 1980-2008", connect = TRUE, n.label=FALSE, p=0.9)
+```
+
+
+```{r cdf religious scores by geography}
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$religscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity 1980-2008, Northeast", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="Northeast"), col=1, p=0.8)
+
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$religscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity 1980-2008, North Central", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="NorthCentral"), col=2, p=0.8)
+
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$religscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity 1980-2008, South", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="South"), col=3, p=0.8) 
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$religscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity 1980-2008, West", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="West"), col=6, p=0.8)
+
+```
+
+```{r cdf religious scores by age cohort time series}
+
+CDF_D <- ANES_TimeSeriesCDF_regressionsrelig %>%
+  select(VCF0004, religscore, agecohort) %>% filter(agecohort=="D") %>% filter(!is.na(VCF0004))
+plotmeans(CDF_D$religscore ~ CDF_D$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity, Birth Year 1943-1958", connect = TRUE, n.label=TRUE, col=6, p=0.90)
+
+CDF_E <- ANES_TimeSeriesCDF_regressionsrelig %>%
+  select(VCF0004, religscore, agecohort) %>% filter(agecohort=="E") %>% filter(!is.na(VCF0004))
+plotmeans(CDF_E$religscore ~ CDF_E$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity, Birth Year 1927-1942", connect = TRUE, n.label=TRUE, col=6, p=0.9)
+
+CDF_F <- ANES_TimeSeriesCDF_regressionsrelig %>%
+  select(VCF0004, religscore, agecohort) %>% filter(agecohort=="F") %>% filter(!is.na(VCF0004))
+
+plotmeans(CDF_F$religscore ~ CDF_F$VCF0004,
+          xlab = "Year", ylab="Religiosity Score", main = "Study of Changes in Religiosity, Birth Year 1911-26", connect = TRUE, n.label=TRUE, col=10, p=0.9)
+
+```
+
+
+```{r cdf religious scores by conservatism}
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$religscore ~ ANES_TimeSeriesCDF_regressionsrelig$conservatism,
+          xlab = "Conservatism", ylab="Avg Religious Score", connect = TRUE, col=2, n.label=FALSE, main="Study of Religiosity by Conservatism, 1980-2012")
+```
+
+```{r cdf social positions by geography}
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$socialscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Social Conservatism Score", main = "Study of Changes in Social Conservatism 1980-2008, Northeast", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="Northeast"), col=1, p=0.7)
+
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$socialscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Social Conservatism Score", main = "Study of Changes in Social Conservatism 1980-2008, North Central", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="NorthCentral"), col=2, p=0.7)
+
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$socialscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Social Conservatism Score", main = "Study of Changes in Social Conservatism 1980-2008, South", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="South"), col=3, p=0.7) 
+plotmeans(ANES_TimeSeriesCDF_regressionsrelig$socialscore ~ ANES_TimeSeriesCDF_regressionsrelig$VCF0004,
+          xlab = "Year", ylab="Social Conservatism Score", main = "Study of Changes in Social Conservatism 1980-2008, West", connect = TRUE, n.label=FALSE, subset= (ANES_TimeSeriesCDF_regressionsrelig$region=="West"), col=6, p=0.7)
+```
+
+```{r box plot religiosity and social conservatism}
+summary(ANES_TimeSeriesCDF_regressionsrelig$religscore)
+
+
+ANES_TimeSeriesCDF_regressionsrelig$BinaryReligious <- (ifelse (ANES_TimeSeriesCDF_regressionsrelig$religscore>3.818, "Highly Religious", "Lowly Religious"))
+
+boxplot(socialscore ~ BinaryReligious, data=ANES_TimeSeriesCDF_regressionsrelig, xlab= "Religiosity" , ylab="Social Conservatism Score", main="Study of Social Conservatism by Religiosity, Cumulative")
+
+
+ANES_TimeSeriesCDF_regressionsrelig$TernaryReligious <- (ifelse (ANES_TimeSeriesCDF_regressionsrelig$religscore>5.405, "Highly Religious", ifelse(ANES_TimeSeriesCDF_regressionsrelig$religscore < 1.811, "Secular", "Moderately Religious")))
+
+boxplot(socialscore ~ TernaryReligious, data=ANES_TimeSeriesCDF_regressionsrelig, xlab= "Religiosity" , ylab="Social Conservatism Score", main="Study of Social Conservatism by Religiosity, Cumulative")
+
+
+```
+
+```{r cdf regression}
+summary(ANES_Regression<- lm(ANES_TimeSeriesCDF_regressionsrelig$socialscore ~ ANES_TimeSeriesCDF_regressionsrelig$religscore))
+```
+
+In fact, there must be an external stimuli that serves as a catalyst to allow religiosity to serve as a cleavage, and this catalyst is often individual parties emphasizing social policy positions, as was the case in 2016. Thus, while this proposes a subject for future studies to study more in depth, this data supports the main hypotheses of this paper. 
+
+Conclusion: 
+
+	As this paper has shown, there is a growing need to understand the relationship between religiosity and issue preferences. Traditional undertakings on the effects of religion in politics have focused on individual religious groups, but this past election points to an emergence of a religiously motivated electorate that is not restrained by specifics of religious groups. These voters, as they have been in the past, are socially conservative, but they are not always guided by their social policy preferences. 
+	There are a few further points worth discussing. First, there is the issue of reverse causality for both hypothesis. Is it possible that social conservatism leads to religiosity? The evidence discussed in this paper, especially regarding the historical trends between religiosity and social conservatism would suggest no. First, religiosity seems to be based on something more fundamental—an individual grows up in a religion and forms their sense of morality largely through their religion. This phenomenon is well established in sociological texts and the substantial overlap in issue preferences when a population is only segmented in the highly religious and lowly religious suggests that the causal direction remains from religiosity to social conservatism. The second question of reverse causality is more substantial. Is it possible that religiously motivated individuals are precisely what cause parties to emphasize social policy platforms? Given the historical studies of group loyalties, especially by Axelrod, would suggest otherwise. Nonetheless, it is possible that candidates take more extreme social stances during primaries (especially challengers, which helps explain the rises in congressional social conservatism seen during what would have been the TEA party movement) to appeal to their more extreme voters. Even in this scenario, however, the larger electorate must choose between two extreme social policy positions and they must make this choice after the parties have already emphasized social policy in their campaigns. In many ways, this is precisely what happened in the 2016 general election, when the larger electorate was forced to choose between two radically different social policy platforms. As the data shows, religiosity served as a cleavage when the electorate faced a polarized choice. Nonetheless, further studies would benefit by evaluating when campaigns appeal to social issues and whether this is prior to, concurrent with, or after religiosity has divided the electorate. The data presented here certainly suggests that the cleavage occurs after campaigns emphasize social issues, especially considering the general decline in religiosity leading up to the 2016 election. One final consideration is that of age—as discussed towards the end of the paper, older groups seem to get more religious over time, which suggests a potential inflection point for the current downward trend in religiosity. In fact, further studies would benefit from closely understanding the historical instances where the electorate grew increasingly religious and public policy shifted socially conservative. Ultimately, it is necessary, after understanding the potential for religiosity to serve as a cleavage and the conditions that make it possible, to explore the underlying mechanisms guiding the link between religiosity and social conservatism. This paper, by focusing on “social” issues, has proposed an underlying connection to moral fundamentalism, but understanding the limits and magnitude of this connection is of great importance.
+((
